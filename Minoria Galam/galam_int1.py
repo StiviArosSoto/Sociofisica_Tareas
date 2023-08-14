@@ -1,45 +1,64 @@
-import numpy as np
+import math
 import matplotlib.pyplot as plt
+import numpy as np
 
-# Definir los valores de a y L (numero de subgrupos)
-a = [0.2, 0.2, 0.2, 0.2, 0.1, 0.1]
-L = 6
+#Definimos una función para calcular el coeficiente binomial
+def binom(k, j):
 
-#Definir probabilidad inicial a favor
+    return math.factorial(k) // (math.factorial(j) * math.factorial(k - j))
 
-Pyi = 0.70
+# Definimos ambas sumatorias
+def calculo(L, a, Py):
+    P_plus_t1 = 0
+    
+    for k in range(1, L + 1):
+        sumatoria1 = 0
+        for j in range(int((k//2)+1), k + 1):
+            coef = binom(k,j)
+            sumatoria1 += coef * (Py ** j) * ((1 - Py) ** (k - j))
+        
+        P_plus_t1 += a[k - 1] * sumatoria1
+    return P_plus_t1 
 
-def fact(j, k):
-    if k < 0 or k > j:
-        return 0
-    return np.math.factorial(j) // (np.math.factorial(k) * np.math.factorial(j - k))
+#Condiciones iniciales
+Py1 = np.linspace(0,1,100) #Valor inicial de Poblacion a favor
+Py2 = np.linspace(0,1,100)
 
-# Definir la función para calcular la sumatoria
-def sumatoria(P, a, L):
-    suma = 0
-    for i in range(L):
-        suma += a[i] * P[i]
-    return suma
-
-# Definir los valores iniciales de P
-P = [0.7, 0, 0, 0, 0, 0]
+a1 = [0.2, 0.2, 0.2, 0.2, 0.1, 0.1] # todos los valores de cada a_i
+a2 = [0,0.1,0.9]
+L1 = len(a1)   #Numero de grupos a_i
+L2 = len(a2)
 
 
+# Iterar para varios valores de t
+iteraciones = 1
+val_tm1_1 = [Py1]
+val_tm1_2 = [Py2]
+for i in range(iteraciones):
+    tm1_1 = calculo(L1, a1, Py1)
+    tm1_2 = calculo(L2,a2,Py2)
+    val_tm1_1.append(tm1_1)
+    val_tm1_2.append(tm1_2)
+    Py1 = tm1_1
+    Py2 = tm1_2
 
 
-def Prob(L, P0, *args): #Esta función es P(t+1), se calcula como aparece en el paper
-    if np.sum(args) != 1 or len(args) != L: #Verifica que se cumplan lascondiciones del modelo
-        return print('los valores de a_n no suman 1 o no coinciden con L') 
-    else:
-        total_sum = 0 #Se define para la suma total
-        for i in range(1, len(args) + 1):
-            a = args[i - 1]
-            sum_i = 0 #Se define para la suma dentro de cada a_i
-            for j in range(int(np.floor((i / 2) + 1)), i + 1):
-                C =(np.math.factorial(i))/((np.math.factorial(i - j))*(np.math.factorial(j)))#Combinatoria
-                Py = j #Probabilidad a favor
-                Pn = i - j #Probabilidad en contra
-                su = a * np.sum(C * P0 ** Py * (1-P0) ** Pn) 
-                sum_i += su
-                total_sum += su
-        return sum_i, total_sum
+
+
+pt_1 = val_tm1_1[:-1] #Tomamos todos excepto el último
+ptm1_1 = val_tm1_1[1:] # tomamos todos los valores excepto el primero
+
+pt_2 = val_tm1_2[:-1]
+ptm1_2 = val_tm1_2[1:]
+
+# Crear el gráfico
+plt.figure()
+
+plt.plot(pt_1, ptm1_1, linestyle='-', color='blue', linewidth=10)
+plt.plot(pt_2, ptm1_2, marker='x', linestyle='-', color='b',linewidth=1)
+plt.plot([0, 1], [0, 1], linestyle='--', color='red')
+plt.xlabel('P(t)')
+plt.ylabel('P(t+1)')
+plt.title('Gráfico de P(t) vs P(t+1)')
+plt.grid('True')
+plt.show()

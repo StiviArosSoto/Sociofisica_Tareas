@@ -1,116 +1,72 @@
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 
+#Definimos una función para calcular el coeficiente binomial
+def binom(k, j):
 
-def coeficiente_binomial(k, j):
-    if j < 0 or j > k:
-        return 0
     return math.factorial(k) // (math.factorial(j) * math.factorial(k - j))
 
-
-# =============================================================================
-# def calculo(L, a, P_plus_t):
-#     P_minus = 1 - P_plus_t
-#     P_plus_t1 = 0
-#     
-#     # Valores de P(t) y P(t+1)
-#     p_t_values = []
-#     p_tmas1_values = []
-#     
-#     for k in range(1, L + 1):
-#         sumatoria1 = 0
-#         
-#         for j in range(int((k//2)+1), k + 1):
-#             coef_binomial = math.comb(j, k)
-#             sumatoria1 += coef_binomial * (P_plus_t ** j) * (P_minus ** (k - j))
-#         p_t_values.append(P_plus_t)    
-#         P_plus_t1 += a[k - 1] * sumatoria1
-#         P_plus_t = P_plus_t1
-#         p_tmas1_values.append(P_plus_t1)
-#     return P_plus_t1 , p_t_values, p_tmas1_values
-# 
-# =============================================================================
-# Valores iniciales
-t = 0
-L = 6
-a = [0.2, 0.2, 0.2, 0.2, 0.1, 0.1]
-
-
+# Definimos ambas sumatorias
 def calculo(L, a, Py):
     P_plus_t1 = 0
     
-    # Valores de P(t) y P(t+1)
-    p_t_values = []
-    p_tmas1_values = []
-    
     for k in range(1, L + 1):
-        
-        P_plus_t1 = 0
         sumatoria1 = 0
-        #print(f'iteracion {k}')
         for j in range(int((k//2)+1), k + 1):
-            coef_binomial = math.comb(j, k)
-            sumatoria1 += coef_binomial * (Py ** j) * ((1 - Py) ** (k - j))
+            coef = binom(k,j)
+            sumatoria1 += coef * (Py ** j) * ((1 - Py) ** (k - j))
         
-        p_t_values.append(Py) 
-        print(f' iteracion {j} , p(t) es: {p_t_values[j-1]}')
-        #print(f'valor de a = {a[k-1]}')
         P_plus_t1 += a[k - 1] * sumatoria1
-        Py = P_plus_t1
-        p_tmas1_values.append(P_plus_t1)
-        #print(f' iteracion {j} , p(t+1) es: {P_plus_t1}')
-    return P_plus_t1 , p_t_values, p_tmas1_values
+    return P_plus_t1 
 
-# Valores de P(t) y P(t+1)
-# =============================================================================
-# p_t_values = []
-# p_tmas1_values = []
-# =============================================================================
-Py = 0.7
-# =============================================================================
-# for k in range(1, L + 1):
-#     
-#     P_plus_t1 = 0
-#     sumatoria1 = 0
-#     #print(f'iteracion {k}')
-#     for j in range(int((k//2)+1), k + 1):
-#         coef_binomial = math.comb(j, k)
-#         sumatoria1 += coef_binomial * (Py ** j) * ((1 - Py) ** (k - j))
-#     
-#     p_t_values.append(Py) 
-#     print(f' iteracion {j} , p(t) es: {p_t_values[j-1]}')
-#     #print(f'valor de a = {a[k-1]}')
-#     P_plus_t1 += a[k - 1] * sumatoria1
-#     Py = P_plus_t1
-#     p_tmas1_values.append(P_plus_t1)
-#     #print(f' iteracion {j} , p(t+1) es: {P_plus_t1}')
-# =============================================================================
+#Condiciones iniciales
+Py1 = np.linspace(0,1,100) #Valor inicial de Poblacion a favor
+Py2 = np.linspace(0,1,100)
+
+a1 = [0.2, 0.2, 0.2, 0.2, 0.1, 0.1] # todos los valores de cada a_i
+a2 = [0,0.1,0.9]
+L1 = len(a1)   #Numero de grupos a_i
+L2 = len(a2)
 
 
-# =============================================================================
-# # Iterar para varios valores de t
-# for _ in range(100):  # Puedes ajustar la cantidad de iteraciones
-#     p_t_values.append(P_plus_t)
-#     P_plus_t1 = calcular_P_plus(L, a, P_plus_t)
-#     p_tmas1_values.append(P_plus_t1)
-#     P_plus_t = P_plus_t1
-# =============================================================================
-
-
-# =============================================================================
-# pt = p_t_values
-# ptm1 = p_tmas1_values
-# =============================================================================
-cal = calculo(L, a, Py)
-pt , ptm1 = cal[1],cal[2]
+# Iterar para varios valores de t
+iteraciones = 1
+val_tm1_1 = [Py1]
+val_tm1_2 = [Py2]
+for i in range(iteraciones):
+    tm1_1 = calculo(L1, a1, Py1)
+    tm1_2 = calculo(L2,a2,Py2)
+    val_tm1_1.append(tm1_1)
+    val_tm1_2.append(tm1_2)
+    Py1 = tm1_1
+    Py2 = tm1_2
 
 
 
-#pt , ptm1 = calculo(L, a, P_plus_t)[1], calculo(L, a, P_plus_t)[2]
+
+pt_1_l = val_tm1_1[:-1] #Tomamos todos excepto el último
+ptm1_1_l = val_tm1_1[1:] # tomamos todos los valores excepto el primero
+
+pt_2_l = val_tm1_2[:-1]
+ptm1_2_l =val_tm1_2[1:]
+
+#convertir a listas:
+pt_1 = np.array(pt_1_l)
+ptm1_1 = np.array(ptm1_1_l)
+pt_2 = np.array(pt_2_l)
+ptm1_2 = np.array(ptm1_2_l)
+
+
+
 # Crear el gráfico
 plt.figure()
-plt.plot(pt, ptm1, marker='o', linestyle='-', color='b')
-plt.plot([0, 1], [0, 1], linestyle='--', color='gray')
+
+plt.plot(pt_1, ptm1_1, marker='.', linestyle='-', color='red', linewidth=1)
+plt.plot(pt_2, ptm1_2, marker='.', linestyle='-', color='b',linewidth=1)
+
+
+plt.plot([0, 1], [0, 1], linestyle='--', color='black')
 plt.xlabel('P(t)')
 plt.ylabel('P(t+1)')
 plt.title('Gráfico de P(t) vs P(t+1)')
