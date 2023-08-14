@@ -1,5 +1,0 @@
-El grupo mas grande es: 3
-Los grupos definidos son:
-a_0= 0
-a_1= 0.1
-a_2= 0.9
