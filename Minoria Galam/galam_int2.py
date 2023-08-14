@@ -2,10 +2,10 @@ import math
 import matplotlib.pyplot as plt
 
 
-def coeficiente_binomial(j, k):
-    if k < 0 or k > j:
+def coeficiente_binomial(k, j):
+    if j < 0 or j > k:
         return 0
-    return math.factorial(j) // (math.factorial(k) * math.factorial(j - k))
+    return math.factorial(k) // (math.factorial(j) * math.factorial(k - j))
 
 
 # =============================================================================
