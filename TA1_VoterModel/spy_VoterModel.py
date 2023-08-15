@@ -1,5 +1,5 @@
-# Modelo de Ising con dinamica de Glauber
-# 06-Junio-2023
+# Modelo del votante, adaptacion código dinámica de Glauber
+
 #===================================================================
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,7 +13,8 @@ tini = datetime.now()
 # Condiciones iniciales
 N=10
 steps = 300
-beta = 1
+
+
 curr_state = np.random.choice(np.array([-1,1]),size=(N,N))
 #-----------------------------------------------
 # Configuracion Figura
